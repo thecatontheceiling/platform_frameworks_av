@@ -962,6 +962,12 @@ void C2SoftApvDec::process(const std::unique_ptr<C2Work>& work,
 
         for (int i = 0; i < aui.num_frms; i++) {
             oapv_frm_info_t* finfo = &aui.frm_info[i];
+            if (finfo->profile_idc != OAPV_PROFILE_422_10 &&
+                finfo->profile_idc != OAPV_PROFILE_422_12) {
+                ALOGE("Unsupported profile %d", finfo->profile_idc);
+                work->result = C2_CORRUPTED;
+                return;
+            }
             if (finfo->w > MAX_SUPPORTED_WIDTH || finfo->h > MAX_SUPPORTED_HEIGHT) {
                 ALOGE("Stream resolution of %dx%d is not supported.", finfo->w, finfo->h);
                 work->result = C2_CORRUPTED;
